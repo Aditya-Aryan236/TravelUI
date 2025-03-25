@@ -76,12 +76,14 @@ android {
     ndkVersion rootProject.ext.ndkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     namespace "com.travelapp"
     defaultConfig {
         applicationId "com.travelapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        ndkVersion rootProject.ext.ndkVersion
         versionCode 1
         versionName "1.0"
     }
@@ -92,6 +94,13 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+         release{
+            storeFile file('debug.keystore')
+            storeFile file("../app/agodakey.keystore")
+            storePassword System.getenv("MYAPP_UPLOAD_STORE_PASSWORD") ?: "qwerty"
+            keyAlias System.getenv("MYAPP_UPLOAD_KEY_ALIAS") ?: "agoda"
+            keyPassword System.getenv("MYAPP_UPLOAD_KEY_PASSWORD") ?: "qwerty"
+        }
     }
     buildTypes {
         debug {
@@ -100,9 +109,16 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
-            minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+     externalNativeBuild {
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+            version "3.22.1" // Replace with your installed CMake version
         }
     }
 }
@@ -116,4 +132,7 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    debugImplementation("com.facebook.flipper:flipper:0.125.0") // Keep only for debug builds
+    releaseImplementation("com.facebook.flipper:flipper-noop:0.125.0") // Disable Flipper in release builds
 }
