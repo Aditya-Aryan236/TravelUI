@@ -110,15 +110,18 @@ android {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.release
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
 
-     externalNativeBuild {
-        cmake {
-            path "src/main/cpp/CMakeLists.txt"
-            version "3.22.1" // Replace with your installed CMake version
+     splits {
+       abi {
+           enable true
+           reset()
+           include 'armeabi-v7a', 'arm64-v8a'//, 'x86', 'x86_64'
+           universalApk false
         }
     }
 }
@@ -133,6 +136,6 @@ dependencies {
         implementation jscFlavor
     }
 
-    debugImplementation("com.facebook.flipper:flipper:0.125.0") // Keep only for debug builds
-    releaseImplementation("com.facebook.flipper:flipper-noop:0.125.0") // Disable Flipper in release builds
+   // debugImplementation("com.facebook.flipper:flipper:0.125.0") // Keep only for debug builds
+   // releaseImplementation("com.facebook.flipper:flipper-noop:0.125.0") // Disable Flipper in release builds
 }
